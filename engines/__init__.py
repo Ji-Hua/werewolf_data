@@ -13,3 +13,5 @@ from .ghost_knight import GhostKnightEngine
 from .devil_merchant import DevilMerchantEngine
 from .stud_wolf_mystic_wolf import StudWolfMysticWolfEngine
 from .big_grey_wolf import BigGreyWolfEngine
+from .mystic_wolf_crow import MysticWolfCrowEngine
+from .gargoyle_graveyard_keeper import GargoyleGraveyardKeeperEngine

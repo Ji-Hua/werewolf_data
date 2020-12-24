@@ -46,3 +46,9 @@ class EngineTypes:
 
     class BigGreyWolf(BigGreyWolfEngine):
         pass
+    
+    class MysticWolfCrow(MysticWolfCrowEngine):
+        pass
+    
+    class GargoyleGraveyardKeeper(GargoyleGraveyardKeeperEngine):
+        pass

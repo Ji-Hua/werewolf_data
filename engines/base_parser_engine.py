@@ -215,6 +215,9 @@ class BaseParserEngine(ABC):
             return (data["death_round"], data["death_method"])
         else:
             return (None, None)
+    
+    def _special_werewolf_action(self, ability, target, round):
+        pass
 
     def parse_night_actions(self, round, row):
         self.night_deaths[round] = {}
@@ -232,14 +235,26 @@ class BaseParserEngine(ABC):
                     role_seat = [role_seat]
                 if role == "狼人":
                     role_seat = self.werewolf_group_seats
+                    if len(role_seat) == 0:
+                        self._special_werewolf_action(ability, target, round)
+                        continue
                 for s in role_seat:
                     death_round, death_method = self._get_death_info(s)
                     if death_round:
                         # self-exploded player could hunt that night
                         if death_method == "自爆":
                             if death_round != self._get_previous_round(round):
+                                idx = self.werewolf_group_seats.index(s)
+                                self.werewolf_group_seats.pop(idx)
                                 continue
+                            else:
+                                # last normal werewolf choose to explode
+                                if len(self.werewolf_group_seats) == 1:
+                                    self.werewolf_group_seats.pop()
                         else:
+                            if s in self.werewolf_group_seats:
+                                idx = self.werewolf_group_seats.index(s)
+                                self.werewolf_group_seats.pop(idx)
                             continue
 
                     action_dict = self.clean_data[s].get('actions', {})

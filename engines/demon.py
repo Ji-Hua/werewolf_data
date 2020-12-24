@@ -31,9 +31,9 @@ class DemonEngine(BaseParserEngine):
     def _check_judge_result(self, target):
             target_role = self.clean_data[target]['role']
             if target_role in self.checkable_werewolf_roles:
-                return "狼"
+                return "非神"
             elif target_role == "平民":
-                return "民"
+                return "非神"
             else:
                 return "神"
 
