@@ -297,13 +297,13 @@ class BaseParserEngine(ABC):
         regexps = {
             '(\d+)警长': '_parse_sheriff',
             '(\d+)出局': '_parse_banish',
-            '(\d+)\w*枪杀(\d+)': '_parse_shot',
             '(\d+)\S*自爆': '_parse_explode',
             '(\S+)[双,三,四,五]?死': '_parse_death',
             '(\d+)\S*殉情': '_parse_couple'
         }
-        descs = row[1].split('，')
-        for desc in descs:
+        descs = row[1]
+
+        for desc in descs.split('，'):
             for key, value in regexps.items():
                 pattern = re.compile(key)
                 match = re.search(pattern, desc) 
@@ -311,6 +311,11 @@ class BaseParserEngine(ABC):
                     func = getattr(self, value)
                     func(match, round)
                     break
+
+        # 枪杀 might scatter in two sentences
+        match = re.search(r'(\d+)\D*枪杀(\d+)', descs)
+        if match:
+            self._parse_shot(match, round)
             
     def parse(self):
         self.parse_name_seat()
