@@ -3,7 +3,9 @@ from .base_parser_engine import BaseParserEngine
 class NightmareEngine(BaseParserEngine):
     def __init__(self):
         super().__init__()
-        self.werewolf_camp = ["狼人", "梦魇"]
+        self.checkable_werewolf_roles = ["狼人", "梦魇"]
+        self.werewolf_group_roles.append("梦魇")
+        self.werewolf_camp_roles.append("梦魇")
 
     def _parse_nightmare_action(self, action_text):
         target = self._parse_general_action(action_text)
@@ -24,4 +26,4 @@ class NightmareEngine(BaseParserEngine):
         elif role == "梦魇":
             return self._parse_nightmare_action(action_text)
         else:
-            raise ValueError(f'{role} {action_text}')  
+            raise ValueError(f'{role} {action_text}')

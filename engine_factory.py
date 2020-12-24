@@ -14,6 +14,12 @@ class EngineFactory:
         "预女猎妖混": "NineTailsMixblood",
         "黑蝙蝠 vs. 预女猎守": "BlackBat",
         "预女猎孩": "LittleGirl",
+        "狼美人 vs. 预女猎白武": "WolfBeautyMonk",
+        "预女猎守野": "Rogue",
+        "恶魔 vs. 预女猎守": "Demon",
+        "恶灵骑士 vs. 预女猎守": "GhostKnight",
+        "邪恶商人 vs. 预女猎守": "DevilMerchant",
+        "种狼、隐狼 vs. 预女猎守": "StudWolfMysticWolf"
     }
 
     def format_engine_name(self, name):

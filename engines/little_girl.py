@@ -38,4 +38,4 @@ class LittleGirlEngine(BaseParserEngine):
         elif role == '小女孩':
             return self._parse_little_girl_action(action_text)
         else:
-            raise ValueError(f'{role} {action_text}')  
+            raise ValueError(f'{role} {action_text}')

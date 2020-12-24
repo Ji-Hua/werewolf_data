@@ -1,9 +1,6 @@
 from .base_parser_engine import BaseParserEngine
 
 class NineTailsMixbloodEngine(BaseParserEngine):
-    def __init__(self):
-        super().__init__()
-
     def _parse_mixblood_action(self, action_text):
         target = self._parse_general_action(action_text)
         ability = '榜样'
@@ -42,4 +39,4 @@ class NineTailsMixbloodEngine(BaseParserEngine):
         elif role == "混血儿":
             return self._parse_mixblood_action(action_text)
         else:
-            raise ValueError(f'{role} {action_text}')  
+            raise ValueError(f'{role} {action_text}')

@@ -1,4 +1,3 @@
-from engines.mixblood import MixbloodEngine
 from engines import *
 
 
@@ -25,4 +24,22 @@ class EngineTypes:
         pass
 
     class LittleGirl(LittleGirlEngine):
+        pass
+
+    class WolfBeautyMonk(WolfBeautyMonkEngine):
+        pass
+
+    class Rogue(RogueEngine):
+        pass
+    
+    class Demon(DemonEngine):
+        pass
+
+    class GhostKnight(GhostKnightEngine):
+        pass
+    
+    class DevilMerchant(DevilMerchantEngine):
+        pass
+
+    class StudWolfMysticWolf(StudWolfMysticWolfEngine):
         pass

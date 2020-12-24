@@ -3,7 +3,9 @@ from .base_parser_engine import BaseParserEngine
 class DemonWolfEngine(BaseParserEngine):
     def __init__(self):
         super().__init__()
-        self.werewolf_camp = ["狼人", "魔狼"]
+        self.checkable_werewolf_roles = ["狼人", "魔狼"]
+        self.werewolf_group_roles.append("魔狼")
+        self.werewolf_camp_roles.append("魔狼")
 
     def _parse_demon_wolf_action(self, action_text):
         target = self._parse_general_action(action_text)
@@ -29,4 +31,4 @@ class DemonWolfEngine(BaseParserEngine):
         elif role == "魔狼":
             return self._parse_demon_wolf_action(action_text)
         else:
-            raise ValueError(f'{role} {action_text}')  
+            raise ValueError(f'{role} {action_text}')

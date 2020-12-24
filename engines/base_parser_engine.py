@@ -28,7 +28,11 @@ class BaseParserEngine(ABC):
         # be hunted and poisoned
         self.deadly_abilities = ['毒杀', '猎杀']
         self.night_deaths = {}
-        self.werewolf_camp = ['狼人']
+        self.checkable_werewolf_roles = ['狼人']  # used for seer's check
+        self.werewolf_group_roles = ['狼人']  # used to determine hunting
+        self.werewolf_group_seats = []
+        self.werewolf_camp_roles = ['狼人']  # used to determine victory camp
+        self.werewolf_camp_seats = []
         self.no_target_ability = []
 
     def read_data(self, action_df, vote_df):
@@ -109,7 +113,7 @@ class BaseParserEngine(ABC):
         elif role == '白痴':
             return self._parse_moron_action(action_text)
         else:
-            raise ValueError(f'{role} {action_text}')    
+            raise ValueError(f'{role} {action_text}')
 
     def create_role_seat_dict(self):
         roles = self.action_df.loc[0]
@@ -145,16 +149,24 @@ class BaseParserEngine(ABC):
         names = self.vote_df.loc[0]
         for i, name in enumerate(names):
             if i > 0:
-                self.clean_data[i] = {'name': name, 'seat': i,
-                    'role': '平民'} # set default
+                self.clean_data[i] = {
+                    'name': name,
+                    'seat': i,
+                    'role': '平民',
+                    'initial_camp': '好人',
+                    'final_camp': '好人'
+                } # set default
         
         self.create_role_seat_dict()
         for role, seats in self.role_map.items():
-            if isinstance(seats, list):
-                for seat in seats:
-                    self.clean_data[seat]['role'] = role
-            else:
-                seat = seats
+            if not isinstance(seats, list):
+                seats = [seats]
+            for seat in seats:
+                if role in self.werewolf_camp_roles:
+                    self.clean_data[seat]['initial_camp'] = '狼人'
+                    self.clean_data[seat]['final_camp'] = '狼人'
+                if role in self.werewolf_group_roles:
+                    self.werewolf_group_seats.append(seat)
                 self.clean_data[seat]['role'] = role
     
     def parse_vote_results(self):
@@ -174,12 +186,12 @@ class BaseParserEngine(ABC):
     
     def _check_result(self, target):
         target_role = self.clean_data[target]['role']
-        if target_role in self.werewolf_camp:
+        if target_role in self.checkable_werewolf_roles:
             return "狼人"
         else:
             return "好人"
     
-    def _check_deadth(self, ability, target, round):
+    def _check_death(self, ability, target, round):
         if ability in self.deadly_abilities:
                 method = f"{self.night_deaths[round].get(target, '')} {ability}".strip()
                 self.night_deaths[round][target] = method
@@ -194,7 +206,14 @@ class BaseParserEngine(ABC):
                 result = self._check_result(target)
                 ability_dict["check_result"] = result
             return ability_dict
-        
+    
+    def _get_death_info(self, seat):
+        data = self.clean_data[seat]
+        if "death_round" in data:
+            return (data["death_round"], data["death_method"])
+        else:
+            return (None, None)
+
     def parse_night_actions(self, round, row):
         self.night_deaths[round] = {}
         for role in self.raw_roles:
@@ -204,25 +223,28 @@ class BaseParserEngine(ABC):
             action_text = row[role]
             # find the ability and target of this role
             ability, target = self.format_night_action(action_text, role)
-
             #NOTE: we don't judge the results here. Simply adding target to night deaths
-            self._check_deadth(ability, target, round)
+            self._check_death(ability, target, round)
             if target:
                 if not isinstance(role_seat, list):
                     role_seat = [role_seat]
+                if role == "狼人":
+                    role_seat = self.werewolf_group_seats
                 for s in role_seat:
-                    if "death_round" in self.clean_data[s]:
-                        # 自爆可以指刀, 其他不计算
-                        if self.clean_data[s]["death_method"] == "自爆":
-                            previous_round = self._get_previous_round(round)
-                            if self.clean_data[s]["death_round"] != previous_round:
+                    death_round, death_method = self._get_death_info(s)
+                    if death_round:
+                        # self-exploded player could hunt that night
+                        if death_method == "自爆":
+                            if death_round != self._get_previous_round(round):
                                 continue
                         else:
                             continue
 
                     action_dict = self.clean_data[s].get('actions', {})
                     ability_dict = self._format_ability_results(ability, target)
-                    action_dict[round] = ability_dict
+                    ability_list = action_dict.get(round, [])
+                    ability_list.append(ability_dict)
+                    action_dict[round] = ability_list
                     self.clean_data[s]['actions'] = action_dict
 
     def _parse_sheriff(self, match, round):
