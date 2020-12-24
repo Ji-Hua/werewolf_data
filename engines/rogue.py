@@ -23,6 +23,7 @@ class RogueEngine(BaseParserEngine):
             self.clean_data[rogue_seat]['final_camp'] = '狼人'
             self.werewolf_group_seats.append(rogue_seat)
             self.werewolf_camp_seats.append(rogue_seat)
+            self.checkable_werewolf_seats.append(rogue_seat)
             target = rogue_seat
         else:
             target = self._parse_general_action(action_text)

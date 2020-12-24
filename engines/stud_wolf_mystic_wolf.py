@@ -8,10 +8,22 @@ class StudWolfMysticWolfEngine(BaseParserEngine):
         super().__init__()
         self.checkable_werewolf_roles = ["狼人", "种狼"]
         self.werewolf_group_roles.append("种狼")
+        self.werewolf_camp_roles = ["狼人", "种狼", "隐狼"]
 
     def _format_ability_results(self, ability, target):
-        if ability == '变狼':
-            ability_dict = {'ability': ability}
+        if ability == '感染':
+            if target:
+                ability_dict = {'ability': ability, 'result': target}
+                actions = list(self.clean_data[self.role_map["种狼"]]["actions"].values())
+                target_seat = actions[-1][0]["target_seat"]
+                ability_dict["target"] = target_seat
+                if target == '成功':
+                    self.clean_data[target_seat]["final_camp"] = "狼人"
+                    self.werewolf_camp_seats.append(target_seat)
+                    self.werewolf_group_seats.append(target_seat)
+                    self.checkable_werewolf_seats.append(target_seat)
+            else:
+                raise ValueError(f"Invalid target {target} for {ability}")
         else:
             ability_dict = {
                 'ability': ability,
@@ -23,34 +35,18 @@ class StudWolfMysticWolfEngine(BaseParserEngine):
                 ability_dict["check_result"] = result
         return ability_dict
 
-    def _parse_rogue_action(self, action_text):
-        if action_text == "变狼":
-            ability = "变身"
-            rogue_seat = self.role_map["野孩子"]
-            self.clean_data[rogue_seat]['final_camp'] = '狼人'
-            self.werewolf_group_seats.append(rogue_seat)
-            target = rogue_seat
+    def _parse_stud_wolf_action(self, action_text):
+        action_text = action_text.strip()
+        if action_text == "感染成功":
+            ability = "感染"
+            target = "成功"  # need to be non-None value
+        elif action_text == "感染失败":
+            ability = "感染"
+            target = "失败"  # need to be non-None value
         else:
-            target = self._parse_general_action(action_text)
-            ability = '榜样'
-            self.model_seat = target
+            ability = "感染"
+            target = None
         return (ability, target)
-    
-    def _format_ability_results(self, ability, target):
-        if ability == '变身':
-            death_round, _ = self._get_death_info(self.model_seat)
-            ability_dict = {'ability': ability, 'round': death_round}
-        else:
-            ability_dict = {
-                'ability': ability,
-                'target_seat': target,
-                'target_role': self.clean_data[target]['role']
-            }
-            if ability == "查验":
-                result = self._check_result(target)
-                ability_dict["check_result"] = result
-        return ability_dict
-
     
     def format_night_action(self, action_text, role):
         if role == "狼人":
@@ -63,22 +59,9 @@ class StudWolfMysticWolfEngine(BaseParserEngine):
             return self._parse_hunter_action(action_text)
         elif role == '守卫':
             return self._parse_guard_action(action_text)
-        elif role == "野孩子":
-            return self._parse_rogue_action(action_text)
+        elif role == "种狼":
+            return self._parse_stud_wolf_action(action_text)
+        elif role == '隐狼':
+            return (None, None)
         else:
             raise ValueError(f'{role} {action_text}')
-
-    def _check_result(self, target):
-        target_role = self.clean_data[target]['role']
-        if target_role == "野孩子":
-            death_round, _ = self._get_death_info(self.model_seat)
-            if death_round and death_round[-1] == "天":
-                return "狼人"
-            else:
-                return "好人"
-        else:
-            target_role = self.clean_data[target]['role']
-            if target_role in self.werewolf_camp:
-                return "狼人"
-            else:
-                return "好人"

@@ -86,7 +86,7 @@ def write_cleaned_data(cleaned_data, dest):
 
 if __name__ == '__main__':
     doc_name = "/mnt/d/BoardGame/Autumn/data/HCSSA 桌游社狼人杀游戏裁判表 0919.docx"
-    game_id = 3
+    game_id = 4
 
     new_name = doc_name.split()[-1].split('.')[0]
     dest = f'./cleaned_data/{new_name}-{game_id}-new.json'

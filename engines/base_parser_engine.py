@@ -29,6 +29,7 @@ class BaseParserEngine(ABC):
         self.deadly_abilities = ['毒杀', '猎杀']
         self.night_deaths = {}
         self.checkable_werewolf_roles = ['狼人']  # used for seer's check
+        self.checkable_werewolf_seats = []
         self.werewolf_group_roles = ['狼人']  # used to determine hunting
         self.werewolf_group_seats = []
         self.werewolf_camp_roles = ['狼人']  # used to determine victory camp
@@ -167,6 +168,8 @@ class BaseParserEngine(ABC):
                     self.clean_data[seat]['final_camp'] = '狼人'
                 if role in self.werewolf_group_roles:
                     self.werewolf_group_seats.append(seat)
+                if role in self.checkable_werewolf_roles:
+                    self.checkable_werewolf_seats.append(seat)
                 self.clean_data[seat]['role'] = role
     
     def parse_vote_results(self):
@@ -185,8 +188,7 @@ class BaseParserEngine(ABC):
             previous_round = round
     
     def _check_result(self, target):
-        target_role = self.clean_data[target]['role']
-        if target_role in self.checkable_werewolf_roles:
+        if target in self.checkable_werewolf_seats:
             return "狼人"
         else:
             return "好人"
