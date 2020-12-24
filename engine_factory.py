@@ -19,7 +19,8 @@ class EngineFactory:
         "恶魔 vs. 预女猎守": "Demon",
         "恶灵骑士 vs. 预女猎守": "GhostKnight",
         "邪恶商人 vs. 预女猎守": "DevilMerchant",
-        "种狼、隐狼 vs. 预女猎守": "StudWolfMysticWolf"
+        "种狼、隐狼 vs. 预女猎守": "StudWolfMysticWolf",
+        "大灰狼 vs. 预女猎占" : "BigGreyWolf"
     }
 
     def format_engine_name(self, name):

@@ -43,3 +43,6 @@ class EngineTypes:
 
     class StudWolfMysticWolf(StudWolfMysticWolfEngine):
         pass
+
+    class BigGreyWolf(BigGreyWolfEngine):
+        pass
