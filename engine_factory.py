@@ -22,7 +22,8 @@ class EngineFactory:
         "种狼、隐狼 vs. 预女猎守": "StudWolfMysticWolf",
         "大灰狼 vs. 预女猎占" : "BigGreyWolf",
         "隐狼 vs. 预女猎鸦": "MysticWolfCrow",
-        "石像鬼 vs. 预女猎墓": "GargoyleGraveyardKeeper"
+        "石像鬼 vs. 预女猎墓": "GargoyleGraveyardKeeper",
+        "鬼狼 vs. 预女猎蛊": "GhostWolf"
     }
 
     def format_engine_name(self, name):

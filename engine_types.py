@@ -52,3 +52,6 @@ class EngineTypes:
     
     class GargoyleGraveyardKeeper(GargoyleGraveyardKeeperEngine):
         pass
+    
+    class GhostWolf(GhostWolfEngine):
+        pass

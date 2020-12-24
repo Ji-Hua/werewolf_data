@@ -6,6 +6,7 @@ class DemonWolfEngine(BaseParserEngine):
         self.checkable_werewolf_roles = ["狼人", "魔狼"]
         self.werewolf_group_roles.append("魔狼")
         self.werewolf_camp_roles.append("魔狼")
+        self.deadly_abilities.append("狩猎")
 
     def _parse_demon_wolf_action(self, action_text):
         target = self._parse_general_action(action_text)
