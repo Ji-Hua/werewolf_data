@@ -12,3 +12,4 @@ from .demon import DemonEngine
 from .ghost_knight import GhostKnightEngine
 from .devil_merchant import DevilMerchantEngine
 from .stud_wolf_mystic_wolf import StudWolfMysticWolfEngine
+from .big_grey_wolf import BigGreyWolfEngine

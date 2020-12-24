@@ -21,13 +21,13 @@ class WolfBeautyMonkEngine(BaseParserEngine):
     def format_night_action(self, action_text, role):
         if role == "狼人":
             return self._parse_werewolf_action(action_text)
-        elif role == '女巫':
+        elif role == "女巫":
             return self._parse_witch_action(action_text)
-        elif role == '预言家':
+        elif role == "预言家":
             return self._parse_seer_action(action_text)
-        elif role == '猎人':
+        elif role == "猎人":
             return self._parse_hunter_action(action_text)
-        elif role == '白痴':
+        elif role == "白痴":
             return self._parse_moron_action(action_text)
         elif role == "武僧":
             return self._parse_monk_action(action_text)

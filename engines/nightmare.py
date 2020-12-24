@@ -15,13 +15,13 @@ class NightmareEngine(BaseParserEngine):
     def format_night_action(self, action_text, role):
         if role == "狼人":
             return self._parse_werewolf_action(action_text)
-        elif role == '女巫':
+        elif role == "女巫":
             return self._parse_witch_action(action_text)
-        elif role == '预言家':
+        elif role == "预言家":
             return self._parse_seer_action(action_text)
-        elif role == '猎人':
+        elif role == "猎人":
             return self._parse_hunter_action(action_text)
-        elif role == '守卫':
+        elif role == "守卫":
             return self._parse_guard_action(action_text)
         elif role == "梦魇":
             return self._parse_nightmare_action(action_text)

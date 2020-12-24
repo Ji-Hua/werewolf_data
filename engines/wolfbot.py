@@ -52,13 +52,13 @@ class WolfbotEngine(BaseParserEngine):
     def format_night_action(self, action_text, role):
         if role == "狼人":
             return self._parse_werewolf_action(action_text)
-        elif role == '女巫':
+        elif role == "女巫":
             return self._parse_witch_action(action_text)
-        elif role == '通灵师':
+        elif role == "通灵师":
             return self._parse_medium_action(action_text)
-        elif role == '猎人':
+        elif role == "猎人":
             return self._parse_hunter_action(action_text)
-        elif role == '守卫':
+        elif role == "守卫":
             return self._parse_guard_action(action_text)
         elif role == "机械狼":
             return self._parse_wolfbot_action(action_text)
