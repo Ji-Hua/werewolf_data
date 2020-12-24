@@ -1,9 +1,25 @@
 import json
+import re
 
 import docx
 import pandas as pd
 
-from game_parser import GameParser
+from engine_factory import EngineFactory
+
+
+
+CHINESE_NUMBER_DICT = {
+    1: '一',
+    2: '二',
+    3: '三',
+    4: '四',
+    5: '五',
+    6: '六',
+    7: '七',
+    8: '八',
+    9: '九'
+}
+
 
 def read_table(doc_name, table_id: int):
     # Load the first table from your document. In your example file,
@@ -32,6 +48,18 @@ def read_table(doc_name, table_id: int):
     
     return data
 
+def get_game_name_by_id(doc_name, game_id: int):
+    document = docx.Document(doc_name)
+    paragraph_id = None
+    for i, p in enumerate(document.paragraphs):
+        pattern = re.compile(f'第{CHINESE_NUMBER_DICT[game_id]}局')
+        if re.search(pattern, p.text):
+            paragraph_id = i + 1
+            break
+    template = document.paragraphs[paragraph_id].text.split('：')[-1]
+    return re.sub('vs\.?', 'vs.', template)
+
+
 def get_game_data(doc_name, game_id: int):
     vote_table_id = (game_id - 1) * 2
     action_table_id = (game_id - 1) * 2 + 1
@@ -39,8 +67,12 @@ def get_game_data(doc_name, game_id: int):
     vote_df = pd.DataFrame(read_table(doc_name, vote_table_id))
     action_df = pd.DataFrame(read_table(doc_name, action_table_id))
 
-    parser = GameParser(action_df, vote_df)
-    cleaned_data = parser.parse()
+    factory = EngineFactory()
+    name = get_game_name_by_id(doc_name, game_id)
+    cleaned_data = {"template": name}
+    parser = factory.construct(name)
+    parser.read_data(action_df, vote_df)
+    cleaned_data["data"] = parser.parse()
 
     return cleaned_data
 
@@ -53,12 +85,19 @@ def write_cleaned_data(cleaned_data, dest):
 
 
 if __name__ == '__main__':
-    doc_name = "/mnt/d/BoardGame/Autumn/data/HCSSA 桌游社狼人杀游戏裁判表 0919.docx"
-    game_id = 4
+    doc_name_base = "/mnt/d/BoardGame/Autumn/data/HCSSA 桌游社狼人杀游戏裁判表"
+    games = [
+        ("0829", 1), ("0829", 2), ("0829", 3), ("0829", 4),
+        ("0905", 1), ("0905", 2), ("0905", 3),
+        ("0912", 1), ("0912", 2), ("0912", 3), ("0912", 4),
+        ("0919", 1), ("0919", 2), ("0919", 3), ("0919", 4)
+    ]
+    for game in games:
+        doc_name = f"{doc_name_base} {game[0]}.docx"
+        game_id = game[1]
 
-    new_name = doc_name.split()[-1].split('.')[0]
-    dest = f'./cleaned_data/{new_name}-{game_id}.json'
+        new_name = doc_name.split()[-1].split('.')[0]
+        dest = f'./cleaned_data/{new_name}-{game_id}-new.json'
 
-    cleaned_data = get_game_data(doc_name, game_id)
-    write_cleaned_data(cleaned_data, dest)
-    
+        cleaned_data = get_game_data(doc_name, game_id)
+        write_cleaned_data(cleaned_data, dest)
