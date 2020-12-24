@@ -85,11 +85,19 @@ def write_cleaned_data(cleaned_data, dest):
 
 
 if __name__ == '__main__':
-    doc_name = "/mnt/d/BoardGame/Autumn/data/HCSSA 桌游社狼人杀游戏裁判表 0919.docx"
-    game_id = 4
+    doc_name_base = "/mnt/d/BoardGame/Autumn/data/HCSSA 桌游社狼人杀游戏裁判表"
+    games = [
+        ("0829", 1), ("0829", 2), ("0829", 3), ("0829", 4),
+        ("0905", 1), ("0905", 2), ("0905", 3),
+        ("0912", 1), ("0912", 2), ("0912", 3), ("0912", 4),
+        ("0919", 1), ("0919", 2), ("0919", 3), ("0919", 4)
+    ]
+    for game in games:
+        doc_name = f"{doc_name_base} {game[0]}.docx"
+        game_id = game[1]
 
-    new_name = doc_name.split()[-1].split('.')[0]
-    dest = f'./cleaned_data/{new_name}-{game_id}-new.json'
+        new_name = doc_name.split()[-1].split('.')[0]
+        dest = f'./cleaned_data/{new_name}-{game_id}-new.json'
 
-    cleaned_data = get_game_data(doc_name, game_id)
-    write_cleaned_data(cleaned_data, dest)
+        cleaned_data = get_game_data(doc_name, game_id)
+        write_cleaned_data(cleaned_data, dest)
