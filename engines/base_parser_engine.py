@@ -1,4 +1,5 @@
 from abc import ABC
+import copy
 import re
 
 
@@ -234,29 +235,29 @@ class BaseParserEngine(ABC):
                 if not isinstance(role_seat, list):
                     role_seat = [role_seat]
                 if role == "狼人":
-                    role_seat = self.werewolf_group_seats
-                    if len(role_seat) == 0:
-                        self._special_werewolf_action(ability, target, round)
-                        continue
-                for s in role_seat:
-                    death_round, death_method = self._get_death_info(s)
-                    if death_round:
-                        # self-exploded player could hunt that night
-                        if death_method == "自爆":
-                            if death_round != self._get_previous_round(round):
-                                idx = self.werewolf_group_seats.index(s)
-                                self.werewolf_group_seats.pop(idx)
-                                continue
+                    role_seat = copy.deepcopy(self.werewolf_group_seats)
+                    for s in self.werewolf_group_seats:
+                        death_round, death_method = self._get_death_info(s)
+                        if death_round:
+                            # self-exploded player could hunt that night
+                            if death_method == "自爆":
+                                if death_round != self._get_previous_round(round):
+                                    idx = role_seat.index(s)
+                                    role_seat.pop(idx)
+                                    continue
+                                else:
+                                    # last normal werewolf choose to explode
+                                    if len(role_seat) == 1:
+                                        role_seat.pop()
                             else:
-                                # last normal werewolf choose to explode
-                                if len(self.werewolf_group_seats) == 1:
-                                    self.werewolf_group_seats.pop()
-                        else:
-                            if s in self.werewolf_group_seats:
-                                idx = self.werewolf_group_seats.index(s)
-                                self.werewolf_group_seats.pop(idx)
+                                if s in role_seat:
+                                    idx = role_seat.index(s)
+                                    role_seat.pop(idx)
+                                continue
+                        if len(role_seat) == 0:
+                            self._special_werewolf_action(ability, target, round)
                             continue
-
+                for s in role_seat:
                     action_dict = self.clean_data[s].get('actions', {})
                     ability_dict = self._format_ability_results(ability, target)
                     ability_list = action_dict.get(round, [])
