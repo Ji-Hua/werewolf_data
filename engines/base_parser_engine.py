@@ -312,6 +312,9 @@ class BaseParserEngine(ABC):
         player = int(match.group(1))
         self.clean_data[player]['death_round'] = round
         self.clean_data[player]['death_method'] = '殉情'
+    
+    def _parse_extra_day_info(self, descs, round):
+        pass
 
     def parse_day_actions(self, row, round):
         # Just use one cell since replica
@@ -337,6 +340,9 @@ class BaseParserEngine(ABC):
         match = re.search(r'(\d+)\D*枪杀(\d+)', descs)
         if match:
             self._parse_shot(match, round)
+        
+        self._parse_extra_day_info(descs, round)
+
             
     def parse(self, winner=None):
         self.parse_name_seat()

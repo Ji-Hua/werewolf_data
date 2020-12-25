@@ -17,3 +17,4 @@ from .mystic_wolf_crow import MysticWolfCrowEngine
 from .gargoyle_graveyard_keeper import GargoyleGraveyardKeeperEngine
 from .ghost_wolf import GhostWolfEngine
 from .riddle_fox import RiddleFoxEngine
+from .storm_wolf import StormWolfEngine
