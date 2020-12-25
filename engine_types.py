@@ -58,3 +58,6 @@ class EngineTypes:
     
     class RiddleFox(RiddleFoxEngine):
         pass
+    
+    class StormWolf(StormWolfEngine):
+        pass

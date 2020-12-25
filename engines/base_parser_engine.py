@@ -322,11 +322,10 @@ class BaseParserEngine(ABC):
             '(\d+)警长': '_parse_sheriff',
             '(\d+)出局': '_parse_banish',
             '(\d+)\S*自爆': '_parse_explode',
-            '(\S+)[双,三,四,五]?死': '_parse_death',
-            '(\d+)\S*殉情': '_parse_couple'
+            '(\d+)\S*殉情(而死)?': '_parse_couple',
+            '(\S+)[双,三,四,五]?死': '_parse_death'
         }
         descs = row[1]
-
         for desc in descs.split('，'):
             for key, value in regexps.items():
                 pattern = re.compile(key)

@@ -24,7 +24,7 @@ class EngineFactory:
         "隐狼 vs. 预女猎鸦": "MysticWolfCrow",
         "石像鬼 vs. 预女猎墓": "GargoyleGraveyardKeeper",
         "鬼狼 vs. 预女猎蛊": "GhostWolf",
-        # "雪狼 vs. 预女猎公": "StormWolf",
+        "雪狼 vs. 预女猎公": "StormWolf",
         "咒狐": "RiddleFox"
     }
 
