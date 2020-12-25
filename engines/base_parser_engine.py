@@ -35,7 +35,8 @@ class BaseParserEngine(ABC):
         self.werewolf_group_seats = []
         self.werewolf_camp_roles = ['狼人']  # used to determine victory camp
         self.werewolf_camp_seats = []
-        self.no_target_ability = []
+        self.third_party_roles = []
+        self.third_party_seats = []
 
     def read_data(self, action_df, vote_df):
         self.action_df = action_df
@@ -167,6 +168,10 @@ class BaseParserEngine(ABC):
                 if role in self.werewolf_camp_roles:
                     self.clean_data[seat]['initial_camp'] = '狼人'
                     self.clean_data[seat]['final_camp'] = '狼人'
+                elif role in self.third_party_roles:
+                    self.clean_data[seat]['initial_camp'] = '第三方'
+                    self.clean_data[seat]['final_camp'] = '第三方'
+                    self.third_party_seats.append(seat)
                 if role in self.werewolf_group_roles:
                     self.werewolf_group_seats.append(seat)
                 if role in self.checkable_werewolf_roles:

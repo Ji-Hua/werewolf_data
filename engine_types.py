@@ -55,3 +55,6 @@ class EngineTypes:
     
     class GhostWolf(GhostWolfEngine):
         pass
+    
+    class RiddleFox(RiddleFoxEngine):
+        pass
