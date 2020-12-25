@@ -333,7 +333,7 @@ class BaseParserEngine(ABC):
         if match:
             self._parse_shot(match, round)
             
-    def parse(self):
+    def parse(self, winner=None):
         self.parse_name_seat()
         self.parse_vote_results()
 
@@ -348,6 +348,11 @@ class BaseParserEngine(ABC):
                 self.parse_day_actions(row, round)
             else:
                 raise ValueError(round)
-
+        if winner:
+            for _, c in self.clean_data.items():
+                if c["final_camp"] == winner:
+                    c["result"] = "胜利"
+                else:
+                    c["result"] = "失败"
         return self.clean_data
 

@@ -56,8 +56,31 @@ def get_game_name_by_id(doc_name, game_id: int):
         if re.search(pattern, p.text):
             paragraph_id = i + 1
             break
+    else:
+        raise ValueError(f"{game_id} out of range")
     template = document.paragraphs[paragraph_id].text.split('：')[-1]
     return re.sub('vs\.?', 'vs.', template)
+
+def get_game_winner_by_id(doc_name, game_id: int):
+    document = docx.Document(doc_name)
+    start_id, end_id = None, len(document.paragraphs)
+    for i, p in enumerate(document.paragraphs):
+        p_start = re.compile(f'第{CHINESE_NUMBER_DICT[game_id]}局')
+        p_end = re.compile(f'第{CHINESE_NUMBER_DICT[game_id+1]}局')
+        if re.search(p_start, p.text):
+            start_id = i + 1
+        elif re.search(p_end, p.text):
+            end_id = i
+            break
+    winner = None
+    for p in document.paragraphs[start_id:end_id]:
+        pattern = re.compile(f'胜方：\s*(\S+)阵营')
+        match = re.search(pattern, p.text)
+        if match:
+            winner = match.group(1)
+            return winner
+    else:
+        raise ValueError(f"Winner not found of {game_id}")
 
 
 def get_game_data(doc_name, game_id: int):
@@ -69,13 +92,13 @@ def get_game_data(doc_name, game_id: int):
 
     factory = EngineFactory()
     name = get_game_name_by_id(doc_name, game_id)
-    cleaned_data = {"template": name}
+    winner = get_game_winner_by_id(doc_name, game_id)
+    cleaned_data = {"template": name, "winner": winner}
     parser = factory.construct(name)
     parser.read_data(action_df, vote_df)
-    cleaned_data["data"] = parser.parse()
+    cleaned_data["data"] = parser.parse(winner)
 
     return cleaned_data
-
 
 
 def write_cleaned_data(cleaned_data, dest):
@@ -90,14 +113,18 @@ if __name__ == '__main__':
         ("0829", 1), ("0829", 2), ("0829", 3), ("0829", 4),
         ("0905", 1), ("0905", 2), ("0905", 3),
         ("0912", 1), ("0912", 2), ("0912", 3), ("0912", 4),
-        ("0919", 1), ("0919", 2), ("0919", 3), ("0919", 4)
+        ("0919", 1), ("0919", 2), ("0919", 3), ("0919", 4),
+        ("0926", 1), ("0926", 2),("0926", 3), ("0926", 4),
+        ("1003", 1),
+        ("1003", 2)
     ]
     for game in games:
+        print(game)
         doc_name = f"{doc_name_base} {game[0]}.docx"
         game_id = game[1]
 
         new_name = doc_name.split()[-1].split('.')[0]
-        dest = f'./cleaned_data/{new_name}-{game_id}-new.json'
+        dest = f'./cleaned_data/{new_name}-{game_id}.json'
 
         cleaned_data = get_game_data(doc_name, game_id)
         write_cleaned_data(cleaned_data, dest)
