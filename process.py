@@ -4,6 +4,9 @@ import re
 import docx
 import pandas as pd
 
+import codecs
+
+
 from engine_factory import EngineFactory
 
 
@@ -103,7 +106,7 @@ def get_game_data(doc_name, game_id: int):
 
 
 def write_cleaned_data(cleaned_data, dest):
-    with open(dest, 'w+') as f:
+    with codecs.open(dest, 'w+',  encoding = "utf-8") as f:
         json.dump(cleaned_data, f, ensure_ascii=False, indent=2)
 
 
