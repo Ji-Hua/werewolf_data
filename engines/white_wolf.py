@@ -32,6 +32,7 @@ class WhiteWolfEngine(BaseParserEngine):
         target_role = self.clean_data[target]['role']
 
         self.clean_data[target]['death_method'] = '白狼王击杀'
+        self.clean_data[target]['death_round'] = round
         action_dict = self.clean_data[source].get('actions', {})
         action_dict[round] = {'ability': '自爆击杀', 'target_seat': target,
             'target_role': target_role}
@@ -44,8 +45,10 @@ class WhiteWolfEngine(BaseParserEngine):
         
         if target_role == "狼人" or target_role == "白狼王":
             self.clean_data[target]['death_method'] = '骑士决斗击杀'
+            self.clean_data[target]['death_round'] = round
         else:
             self.clean_data[source]['death_method'] = '骑士决斗自杀'
+            self.clean_data[source]['death_round'] = round
             
         action_dict = self.clean_data[source].get('actions', {})
         action_dict[round] = {'ability': '决斗', 'target_seat': target,
