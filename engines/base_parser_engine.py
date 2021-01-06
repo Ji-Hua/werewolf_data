@@ -189,7 +189,18 @@ class BaseParserEngine(ABC):
                 if seat == 0:
                     continue
                 votes = self.clean_data[seat].get('votes', {})
-                votes[round] = ballot
+                # check if ballot is valid
+                try:
+                    ballot = int(ballot)
+                    votes[round] = {
+                        "target": ballot,
+                        "target_role": self.clean_data[ballot]["role"],
+                        "target_camp": self.clean_data[ballot]["final_camp"]
+                        }
+                except ValueError:
+                    votes[round] = {
+                        "target": ballot,
+                        "target_role": "-"}
                 self.clean_data[seat]['votes'] = votes
             previous_round = round
     
