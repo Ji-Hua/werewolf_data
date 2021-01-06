@@ -25,7 +25,9 @@ class EngineFactory:
         "石像鬼 vs. 预女猎墓": "GargoyleGraveyardKeeper",
         "鬼狼 vs. 预女猎蛊": "GhostWolf",
         "雪狼 vs. 预女猎公": "StormWolf",
-        "咒狐": "RiddleFox"
+        "咒狐": "RiddleFox",
+        "白狼王 vs. 预女守骑": "WhiteWolf",
+        "黑狼王 vs. 预女猎魔": "BlackWolf"
     }
 
     def format_engine_name(self, name):
@@ -34,12 +36,14 @@ class EngineFactory:
         return self.name_engine_dict[name]
 
 
+
     def construct(self, name):
-        builder_name = self.format_engine_name(name)
         try:
+            builder_name = self.format_engine_name(name)
             target_class = getattr(EngineTypes, builder_name)
             instance = target_class()
             return instance
-        except AttributeError:
-            print("Builder {} not defined.".format(builder_name))
-            traceback.print_stack()
+        except Exception:
+            print("{} not defined.".format(name))
+            #print("Builder {} not defined.".format(builder_name))
+            #traceback.print_stack()
