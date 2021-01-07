@@ -4,8 +4,10 @@ import re
 import docx
 import pandas as pd
 
-from engine_factory import EngineFactory
+import codecs
 
+
+from engine_factory import EngineFactory
 
 
 CHINESE_NUMBER_DICT = {
@@ -49,6 +51,7 @@ def read_table(doc_name, table_id: int):
     return data
 
 def get_game_name_by_id(doc_name, game_id: int):
+    # get the page of game id
     document = docx.Document(doc_name)
     paragraph_id = None
     for i, p in enumerate(document.paragraphs):
@@ -62,6 +65,7 @@ def get_game_name_by_id(doc_name, game_id: int):
     return re.sub('vs\.?', 'vs.', template)
 
 def get_game_winner_by_id(doc_name, game_id: int):
+    # get winner infomation
     document = docx.Document(doc_name)
     start_id, end_id = None, len(document.paragraphs)
     for i, p in enumerate(document.paragraphs):
@@ -95,20 +99,20 @@ def get_game_data(doc_name, game_id: int):
     winner = get_game_winner_by_id(doc_name, game_id)
     cleaned_data = {"template": name, "winner": winner}
     parser = factory.construct(name)
-    parser.read_data(action_df, vote_df)
-    cleaned_data["data"] = parser.parse(winner)
-
-    return cleaned_data
+    if parser:
+        parser.read_data(action_df, vote_df)
+        cleaned_data["data"] = parser.parse(winner)
+        return cleaned_data
 
 
 def write_cleaned_data(cleaned_data, dest):
-    with open(dest, 'w+') as f:
+    with codecs.open(dest, 'w+',  encoding = "utf-8") as f:
         json.dump(cleaned_data, f, ensure_ascii=False, indent=2)
 
 
 
 if __name__ == '__main__':
-    doc_name_base = "/mnt/d/BoardGame/Autumn/data/HCSSA 桌游社狼人杀游戏裁判表"
+    doc_name_base = "./data/HCSSA 桌游社狼人杀游戏裁判表"
     games = [
         ("0829", 1), ("0829", 2), ("0829", 3), ("0829", 4),
         ("0905", 1), ("0905", 2), ("0905", 3),
@@ -116,8 +120,16 @@ if __name__ == '__main__':
         ("0919", 1), ("0919", 2), ("0919", 3), ("0919", 4),
         ("0926", 1), ("0926", 2),("0926", 3), ("0926", 4),
         ("1003", 1), ("1003", 2), ("1003", 3),
-        ("1010", 1)
+        ("1010", 1), ("1010", 2), ("1010", 3), ("1010", 4),
+        ("1017", 1), ("1017", 2), ("1017", 3),
+        ("1024", 1), ("1024", 2), ("1024", 3), ("1024", 4), 
+        ("1031", 1), ("1031", 2),
+        ("1107", 1), ("1107", 2), ("1107", 3),
+        ("1114", 1), ("1114", 2), ("1114", 3), ("1114", 4),
+        ("1121", 1), ("1121", 2),
+        ("1127", 1), ("1127", 2), ("1127", 3), ("1127", 4)
     ]
+    
     for game in games:
         print(game)
         doc_name = f"{doc_name_base} {game[0]}.docx"
@@ -125,6 +137,16 @@ if __name__ == '__main__':
 
         new_name = doc_name.split()[-1].split('.')[0]
         dest = f'./cleaned_data/{new_name}-{game_id}.json'
-
         cleaned_data = get_game_data(doc_name, game_id)
-        write_cleaned_data(cleaned_data, dest)
+        if cleaned_data:
+            write_cleaned_data(cleaned_data, dest)
+    
+    '''
+    game = ("1127", 1)
+    doc_name = f"{doc_name_base} {game[0]}.docx"
+    game_id = game[1]
+    name, winner, vote_df, action_df, cleaned_data = get_game_data(doc_name, game_id)
+    new_name = doc_name.split()[-1].split('.')[0]
+    dest = f'./cleaned_data/{new_name}-{game_id}.json'
+    write_cleaned_data(cleaned_data, dest)
+    '''

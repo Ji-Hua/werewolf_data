@@ -216,14 +216,24 @@ class BaseParserEngine(ABC):
                 self.night_deaths[round][target] = method
     
     def _format_ability_results(self, ability, target):
-            ability_dict = {
-                'ability': ability,
-                'target_seat': target,
-                'target_role': self.clean_data[target]['role']
-            }
-            if ability == "查验":
-                result = self._check_result(target)
-                ability_dict["check_result"] = result
+            if isinstance(target, list): # multiple targets, in magician's action
+                ability_dict = {
+                    'ability': ability,
+                    'target_seat': target,
+                    'target_role': [self.clean_data[t]['role'] for t in target]
+                }
+                if ability == "查验":
+                    result = [self._check_result(t) for t in target]
+                    ability_dict["check_result"] = result
+            else:
+                ability_dict = {
+                    'ability': ability,
+                    'target_seat': target,
+                    'target_role': self.clean_data[target]['role']
+                }
+                if ability == "查验":
+                    result = self._check_result(target)
+                    ability_dict["check_result"] = result
             return ability_dict
     
     def _get_death_info(self, seat):
@@ -304,7 +314,13 @@ class BaseParserEngine(ABC):
         action_dict[round] = {'ability': '枪杀', 'target_seat': target,
             'target_role': target_role}
         self.clean_data[source]['actions'] = action_dict
+    
+    def _parse_whitewolf(self, match, round):
+        raise NotImplementedError("Not WhiteWolf Engine!")
 
+    def _parse_knight(self, match, round):
+        raise NotImplementedError("Not WhiteWolf Engine!")
+        
     def _parse_explode(self, match, round):
         player = int(match.group(1))
         self.clean_data[player]['death_round'] = round
@@ -315,9 +331,12 @@ class BaseParserEngine(ABC):
         death_targets = [int(s) for s in text.split()]
         for t in death_targets:
             previous_round = self._get_previous_round(round)
-            death_method = self.night_deaths[previous_round][t]
-            self.clean_data[t]['death_round'] = previous_round
-            self.clean_data[t]['death_method'] = death_method
+            if t in self.night_deaths[previous_round]:
+                death_method = self.night_deaths[previous_round][t]
+                self.clean_data[t]['death_round'] = previous_round
+                self.clean_data[t]['death_method'] = death_method
+            else:
+                pass
 
     def _parse_couple(self, match, round):
         player = int(match.group(1))
@@ -350,8 +369,19 @@ class BaseParserEngine(ABC):
         match = re.search(r'(\d+)\D*枪杀(\d+)', descs)
         if match:
             self._parse_shot(match, round)
+            
+        # 白狼王
+        match = re.search(r'(\d+)\D*自爆，击杀(\d+)', descs)
+        if match:
+            self._parse_whitewolf(match, round)
+            
+        # 骑士
+        match = re.search(r'(\d+)\D*决斗(\d+)', descs)
+        if match:
+            self._parse_knight(match, round)
         
         self._parse_extra_day_info(descs, round)
+        
 
             
     def parse(self, winner=None):

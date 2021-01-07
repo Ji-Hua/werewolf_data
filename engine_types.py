@@ -1,4 +1,6 @@
 from engines import *
+from engines.white_wolf import WhiteWolfEngine
+from engines.black_wolf import BlackWolfEngine
 
 
 class EngineTypes:
@@ -60,4 +62,10 @@ class EngineTypes:
         pass
     
     class StormWolf(StormWolfEngine):
+        pass
+    
+    class WhiteWolf(WhiteWolfEngine):
+        pass
+    
+    class BlackWolf(BlackWolfEngine):
         pass
